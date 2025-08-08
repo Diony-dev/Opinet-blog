@@ -24,7 +24,7 @@ Plataforma de blogging desarrollada con Flask que permite a los usuarios compart
 |--------------|---------------------------------|
 | **Frontend** | HTML5, CSS3, JavaScript, Bootstrap 5 |
 | **Backend**  | Python, Flask                   |
-| **Database** | SQLite (PostgreSQL ready)       |
+| **Database** | MongoDB       |
 | **Auth**     | Flask-Login                     |
 | **Templates**| Jinja2                          |
 
