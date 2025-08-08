@@ -1,16 +1,16 @@
 import os
-from flask import Flask
-from config import config
 
-app = Flask(__name__)
+class DevelopmentConfig():
+    DEBUG = True
+    PORT = 8000
 
-# Usa la configuración de producción si la variable de entorno FLASK_ENV está en 'production'
-if os.environ.get('FLASK_ENV') == 'production':
-    app.config.from_object(config['production'])
-else:
-    app.config.from_object(config['develop'])
 
-# Resto de tu código y rutas...
+class ProductionConfig():
+    DEBUG = False
+    PORT = os.environ.get('PORT', 5000)
 
-if __name__ == '__main__':
-    app.run()
+
+config = {
+    'develop': DevelopmentConfig,
+    'production': ProductionConfig,
+}
