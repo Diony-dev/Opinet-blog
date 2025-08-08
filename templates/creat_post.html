@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Crear Nueva Entrada{% endblock %}
+
+{% block body %}
+<main class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card p-5 shadow-lg border-0">
+                <h2 class="card-title text-center mb-5 display-5 fw-bold" style="color: #1a237e;">
+                    <i class="bi bi-pencil-square me-2"></i>Crear Nueva Entrada de Blog
+                </h2>
+                
+                {% if form.errors %}
+                <div class="alert alert-danger mb-4" role="alert">
+                    <strong>Se encontraron errores en tu publicación:</strong>
+                    <ul class="mb-0 mt-2">
+                        {% for field, errors in form.errors.items() %}
+                            {% for error in errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                <form method="POST">
+                    {{ form.csrf_token }}
+
+                    <div class="mb-4">
+                        {{ form.titulo.label(class="form-label fs-5 fw-semibold") }}
+                        {{ form.titulo(class="form-control form-control-lg", placeholder="Título de la entrada") }}
+                    </div>
+
+                    <div class="mb-4">
+                        {{ form.contenido.label(class="form-label fs-5 fw-semibold") }}
+                        {{ form.contenido(class="form-control", rows="10", placeholder="Contenido completo de la entrada") }}
+                        {{ ckeditor.load() }}
+                        {{ ckeditor.config(name='contenido') }}
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-send-fill me-2"></i>Publicar Entrada
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

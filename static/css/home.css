@@ -1,0 +1,81 @@
+/* Estilos específicos para la página de inicio */
+
+/* Fuentes y colores (puedes ajustar según tu preferencia) */
+:root {
+    --primary-color-custom: #1D71B9; /* El color de tu navbar */
+    --text-dark: #343a40; /* Casi negro */
+    --text-muted-custom: #6c757d; /* Gris para texto secundario */
+    --background-light: #f8f9fa; /* Fondo claro */
+    --card-bg: #ffffff; /* Fondo de tarjeta blanco */
+    --border-light: #dee2e6; /* Borde claro */
+}
+
+/* Ajustes generales para secciones */
+.latest-posts,
+.about-me {
+    background-color: var(--card-bg);
+    padding: 30px;
+    border-radius: 0.5rem; /* Bordes redondeados sutiles */
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); /* Sombra suave */
+    margin-bottom: 2rem; /* Espacio entre secciones */
+}
+
+/* Estilos de los títulos de sección */
+.latest-posts h2,
+.about-me h2 {
+    font-size: 2.25rem; /* Tamaño de fuente más grande */
+    font-weight: 700; /* Negrita */
+    color: var(--primary-color-custom); /* Color principal del navbar */
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.05); /* Sombra de texto sutil */
+}
+
+/* Estilos para las tarjetas de publicaciones */
+.post-card .card-title {
+    font-size: 1.6rem; /* Ajuste el tamaño del título de la tarjeta */
+    font-weight: 600;
+}
+
+.post-card .card-title a {
+    color: var(--text-dark); /* Color del título de la tarjeta */
+    transition: color 0.3s ease;
+}
+
+.post-card .card-title a:hover {
+    color: var(--primary-color-custom); /* Cambia de color al pasar el mouse */
+    text-decoration: none; /* Evita el subrayado de Bootstrap por defecto si no lo quieres */
+}
+
+.post-card .card-text {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--text-muted-custom);
+}
+
+.post-card .btn-primary {
+    background-color: var(--primary-color-custom);
+    border-color: var(--primary-color-custom);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.post-card .btn-primary:hover {
+    background-color: darken(#1D71B9, 10%); /* Esto es pseudocódigo, usa un color más oscuro fijo */
+    border-color: darken(#1D71B9, 10%); /* O ajusta a un valor fijo como #1a609d */
+    background-color: #1a609d; /* Un tono más oscuro para el hover */
+    border-color: #1a609d;
+}
+
+/* Estilos para la sección "Acerca de Mí" */
+.about-content p {
+    font-size: 1.15rem;
+    line-height: 1.7;
+    color: var(--text-dark);
+}
+
+.about-content .lead {
+    font-weight: 400; /* Menos negrita para el lead paragraph */
+}
+
+.profile-img {
+    border: 5px solid var(--primary-color-custom) !important; /* Borde más pronunciado y del color primario */
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important; /* Sombra más fuerte para la imagen */
+}

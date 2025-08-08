@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %} Editar Perfil {% endblock %}
+
+{% block body %}
+<main class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-5">
+                    <h2 class="card-title text-center mb-5 display-5 fw-bold" style="color: #1a237e;">
+                        <i class="bi bi-person-fill me-2"></i>Editar Perfil
+                    </h2>
+
+                    {# Muestra los errores de formulario si existen #}
+                    {% if form.errors %}
+                    <div class="alert alert-danger mb-4" role="alert">
+                        <strong>Se encontraron errores:</strong>
+                        <ul class="mb-0 mt-2">
+                            {% for field, errors in form.errors.items() %}
+                            {% for error in errors %}
+                            <li>{{ error }}</li>
+                            {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    <form method="post" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+
+                        {# Campo para el Nombre #}
+                        <div class="mb-4">
+                            {{ form.nombre.label(class="form-label") }}
+                            {{ form.nombre(class="form-control", value=current_user.nombre) }}
+                        </div>
+
+                        {# Campo para el Email #}
+                        <div class="mb-4">
+                            {{ form.email.label(class="form-label") }}
+                            {{ form.email(class="form-control", value=current_user.email) }}
+                        </div>
+
+                        {# Sección para la foto de perfil #}
+                        <div class="mb-4">
+                            <label class="form-label d-block">Foto de Perfil</label>
+                            <div class="d-flex align-items-center mb-3">
+                                {% if current_user.foto %}
+                                <img src="{{ url_for('static', filename='img/' + current_user.foto) }}" 
+                                     alt="Foto de perfil actual" 
+                                     class="rounded-circle me-3" 
+                                     style="width: 80px; height: 80px; object-fit: cover;">
+                                {% else %}
+                                <img src="{{ url_for('static', filename='img/login.png') }}" 
+                                     alt="Foto de perfil por defecto" 
+                                     class="rounded-circle me-3" 
+                                     style="width: 80px; height: 80px; object-fit: cover;">
+                                {% endif %}
+                                <div class="flex-grow-1">
+                                    {{ form.foto(class="form-control") }}
+                                    <small class="form-text text-muted">Sube una nueva foto para cambiarla.</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            {{ form.enviar(class="btn btn-primary btn-lg mt-3") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

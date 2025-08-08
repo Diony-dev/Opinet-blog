@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}Registro{% endblock %}
+
+{% block customCss %}
+<style>
+    body, html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+    }
+    
+    main {
+        display: flex;
+        align-items: center;
+        min-height: 100vh;
+        width: 100vw;
+    }
+
+    .img-main-container {
+        width: 50%;
+        height: 100vh;
+    }
+
+    .img-main {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .form-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        flex-grow: 1;
+        width: 50%;
+        min-height: 100vh;
+        background-color: #f8f9fa;
+        padding: 20px;
+    }
+
+    .login-form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        background-color: white;
+        max-width: 450px;
+        width: 100%;
+    }
+
+    .form-control {
+        max-width: 350px;
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .btn-login {
+        width: 100%;
+        max-width: 350px;
+        margin-top: 10px;
+    }
+
+    /* Ajustes para dispositivos móviles */
+    @media (max-width: 768px) {
+        main {
+            flex-direction: column;
+            min-height: auto;
+        }
+
+        .img-main-container, .form-wrapper {
+            width: 100%;
+            min-height: auto;
+        }
+
+        .img-main-container {
+            display: none; /* Oculta la imagen en móviles para centrar la atención en el formulario */
+        }
+
+        .form-wrapper {
+            padding: 20px 10px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<main>
+    <div class="img-main-container">
+        <img class="img-main" src="{{ url_for('static', filename='img/mainimg.jpg') }}" alt="Login Image">
+    </div>
+
+    <div class="form-wrapper">
+        <form method="POST" class="login-form">
+            <img class="mb-4" src="{{ url_for('static', filename='img/registrarse.png') }}" width="100" height="100">
+            <h1 class="h3 mb-4 fw-normal text-center" style="color: #1a237e;">
+                <i class="bi bi-person-plus-fill me-2"></i>Crear Cuenta
+            </h1>
+            
+            {{ form.hidden_tag() }}
+
+            {% if form.errors %}
+            <div class="alert alert-danger w-100 mb-3" role="alert">
+                <strong>Ocurrieron errores:</strong>
+                <ul>
+                    {% for field, errors in form.errors.items() %}
+                        {% for error in errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <div class="input-group mb-3">
+                <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                {{ form.nombre(class="form-control", placeholder="Nombre Completo") }}
+            </div>
+
+            <div class="input-group mb-3">
+                <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
+                {{ form.email(class="form-control", placeholder="Correo Electrónico") }}
+            </div>
+
+            <div class="input-group mb-4">
+                <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                {{ form.pasw(class="form-control", placeholder="Contraseña") }}
+            </div>
+
+            <div class="d-grid gap-2 w-100" style="max-width: 350px;">
+                {{ form.enviar(class="btn btn-primary btn-lg btn-login") }}
+            </div>
+            
+            <p class="mt-4 text-center">
+                ¿Ya tienes una cuenta? <a href="{{ url_for('login') }}" class="text-decoration-none">Inicia Sesión</a>
+            </p>
+        </form>
+    </div>
+</main>
+{% endblock %}

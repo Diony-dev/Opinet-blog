@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar Publicación{% endblock %}
+
+{% block body %}
+<main class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card p-5 shadow-lg border-0">
+                <h2 class="card-title text-center mb-5 display-5 fw-bold" style="color: #1a237e;">
+                    <i class="bi bi-pencil-fill me-2"></i>Editar Publicación
+                </h2>
+                
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+
+                    {% if form.errors %}
+                    <div class="alert alert-danger mb-4" role="alert">
+                        <strong>Se encontraron errores en tu publicación:</strong>
+                        <ul class="mb-0 mt-2">
+                            {% for field, errors in form.errors.items() %}
+                                {% for error in errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    <div class="mb-4">
+                        {{ form.titulo.label(class="form-label fs-5 fw-semibold") }}
+                        {{ form.titulo(class="form-control form-control-lg", placeholder="Título del post") }}
+                    </div>
+
+                    <div class="mb-4">
+                        {{ form.contenido.label(class="form-label fs-5 fw-semibold") }}
+                        {{ form.contenido(class="form-control", rows="6") }}
+                        {{ ckeditor.load() }}
+                        {{ ckeditor.config(name='contenido') }}
+                    </div>
+
+                    <div class="form-check form-switch mb-4">
+                        {{ form.estado(class="form-check-input", role="switch", id="flexSwitchCheckChecked") }}
+                        <label class="form-check-label fs-5" for="flexSwitchCheckChecked">
+                            <i class="bi {{ 'bi-eye-fill text-success' if post.estado else 'bi-eye-slash-fill text-secondary' }}"></i>
+                            {{ form.estado.label }}
+                        </label>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-save-fill me-2"></i>Guardar Cambios
+                        </button>
+                        <a href="{{ url_for('my_posts') }}" class="btn btn-outline-secondary btn-lg">
+                            <i class="bi bi-x-circle-fill me-2"></i>Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

@@ -1,0 +1,7 @@
+# Ignorar archivos del entorno
+.env
+venv/
+__pycache__/
+
+# Ignorar archivos generados por el sistema operativo
+.DS_Store

@@ -1,0 +1,19 @@
+{% macro form_build(form) %}
+<div class="mb-3">
+     {{form.label(class='form-label')}}
+     {% if form.type == 'TextAreaField' %}
+         {{ form(class="form-control", rows="4") }}
+     {% else %}
+       {{form(class='form-control')}}
+    {% endif %}
+     {% if form.errors %}
+      <div class="text-danger mt-1">
+        {% for error in form.errors %}
+          <small style="color: red;">{{ error }}</small><br>
+        {% endfor %}
+      </div>
+    {% endif %}
+    </div>
+    
+   
+{%endmacro%}

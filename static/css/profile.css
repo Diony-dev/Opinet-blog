@@ -1,0 +1,23 @@
+/* static/css/profile.css */
+
+.profile-avatar {
+    width: 120px; /* Tamaño del avatar */
+    height: 120px;
+    object-fit: cover; /* Asegura que la imagen cubra el área sin distorsionarse */
+    border: 4px solid #1D71B9; /* Borde del color principal de tu navbar */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+}
+
+/* Ajustes para los títulos dentro de la tarjeta */
+.card-title.text-primary {
+    font-weight: 700;
+}
+
+/* Estilos para la sección de posts del usuario */
+.user-posts .list-group-item {
+    transition: background-color 0.2s ease;
+}
+
+.user-posts .list-group-item:hover {
+    background-color: #f8f9fa; /* Un ligero cambio de fondo al pasar el ratón */
+}

@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}Inicio - Mi Blog{% endblock %}
+
+{% block customCss %}
+    <style>
+        /* Estilos para las tarjetas de posts */
+        .post-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            border: none; /* Elimina el borde */
+        }
+        .post-card:hover {
+            transform: translateY(-5px); /* Se eleva al pasar el ratón */
+            box-shadow: 0 10px 20px rgba(0,0,0,.12), 0 4px 8px rgba(0,0,0,.06) !important;
+        }
+        .card-img-top {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .card-body h3 a {
+            color: #1a237e; /* Usa el color del navbar para consistencia */
+            transition: color 0.2s ease-in-out;
+        }
+        .card-body h3 a:hover {
+            color: #455a64;
+        }
+        .about-me-section {
+            background-color: #f0f0f0; /* Un color de fondo suave para la sección */
+            padding: 50px 0;
+            border-radius: 10px;
+        }
+        .about-me-section img {
+            border: 4px solid #1a237e;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <main class="container my-5">
+        <section class="latest-posts mb-5">
+            <h2 class="text-center mb-4 display-4 fw-bold">Últimas Entradas</h2>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                {% if posts %}
+                    {% for post in posts %}
+                        {% if post.estado %}
+                        <div class="col">
+                            <article class="card h-100 shadow-sm post-card">
+                                {% if post.imagen_destacada %}
+                                    <img src="{{ url_for('static', filename='img/' + post.imagen_destacada) }}" class="card-img-top" alt="Imagen destacada de {{ post.titulo }}">
+                                {% endif %}
+                                <div class="card-body d-flex flex-column">
+                                    <h3 class="card-title fs-4 mb-3"><a href="{{ url_for('post_detail', post_id=post.id) }}" class="text-decoration-none">{{ post.titulo }}</a></h3>
+                                    <p class="card-text text-muted flex-grow-1">{{ post.contenido | truncate(150, True) | safe }}</p> 
+                                    <p class="card-text text-muted small mt-2">
+                                        <i class="bi bi-person-fill"></i> Por: {{ post.autor }} <i class="bi bi-clock-fill ms-2"></i> el {{ post.fecha.strftime('%d de %B de %Y') }}
+                                    </p>
+                                    <a href="{{ url_for('post_detail', post_id=post.id) }}" class="btn btn-outline-primary mt-auto">Leer más &rarr;</a>
+                                </div>
+                            </article>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    <div class="col-12">
+                        <p class="text-center fs-5 text-muted py-5">¡Aún no hay entradas en el blog! ¡Anímate a escribir la primera!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+
+        <hr class="my-5">
+
+        <section class="about-me-section text-center">
+            <h2 class="mb-4 display-5 fw-bold">Acerca de Mí</h2>
+            <div class="row g-4 justify-content-center">
+                <div class="col-md-4">
+                    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Tu foto de perfil" class="img-fluid rounded-circle mb-3 shadow" style="width: 200px; height: 200px; object-fit: cover;">
+                </div>
+                <div class="col-md-6 d-flex align-items-center text-md-start">
+                    <div>
+                        <p class="lead text-muted">
+                            ¡Hola! Soy [Tu Nombre/Nombre del Blog] y te doy la bienvenida a este espacio.
+                            Aquí comparto mis pensamientos, experiencias y conocimientos sobre [Temas del Blog, ej. desarrollo web, viajes, cocina].
+                            Mi objetivo es [Tu objetivo con el blog, ej. inspirar, educar, entretener].
+                            ¡Espero que disfrutes leyendo tanto como yo disfruto escribiendo!
+                        </p>
+                        <a href="#" class="btn btn-primary mt-3">Conoce más</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% if comments %}
+    <div class="list-group">
+        {% for comment in comments %}
+            <div class="list-group-item">
+                <h5 class="mb-1">{{ comment.autor }}</h5>
+                <p class="mb-1">{{ comment.contenido | safe }}</p>
+                <small class="text-muted">{{ comment.fecha.strftime('%d de %B de %Y a las %H:%M') }}</small>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-warning" role="alert">
+        No hay comentarios para esta entrada.
+    </div>
+{% endif %}

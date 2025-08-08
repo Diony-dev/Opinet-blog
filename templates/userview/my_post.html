@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}Mis Publicaciones{% endblock %}
+
+{% block body %}
+<main class="container my-5">
+    <div class="card p-4 shadow-lg border-0">
+        <h2 class="card-title text-center mb-5 display-5 fw-bold" style="color: #1a237e;">
+            <i class="bi bi-journal-text me-2"></i>Gestión de Publicaciones
+        </h2>
+
+        {% if user_posts %}
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col">Título</th>
+                        <th scope="col">Fecha</th>
+                        <th scope="col" class="text-center">Visibilidad</th>
+                        <th scope="col" class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for post in user_posts %}
+                    <tr>
+                        <td>{{ post.titulo }}</td>
+                        <td>{{ post.fecha.strftime('%d de %B de %Y') }}</td>
+                        <td class="text-center">
+                            <span class="badge {{ 'bg-success' if post.estado else 'bg-secondary' }} rounded-pill">
+                                {{ 'Público' if post.estado else 'Oculto' }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="d-flex justify-content-center gap-2">
+                                <a href="{{ url_for('post_detail', post_id=post._id) }}" class="btn btn-sm btn-info" data-bs-toggle="tooltip" data-bs-placement="top" title="Ver">
+                                    <i class="bi bi-eye-fill"></i>
+                                </a>
+                                <a href="{{ url_for('editar_post', post_id=post._id) }}" class="btn btn-sm btn-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Editar">
+                                    <i class="bi bi-pencil-fill"></i>
+                                </a>
+                                <form action="{{ url_for('cambiar_estado', post_id=post._id) }}" method="POST" class="d-inline">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-sm {{ 'btn-secondary' if post.estado else 'btn-success' }}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ 'Ocultar' if post.estado else 'Hacer visible' }}">
+                                        <i class="bi {{ 'bi-eye-slash-fill' if post.estado else 'bi-eye-fill' }}"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-warning text-center" role="alert">
+            <h4 class="alert-heading">¡Vaya!</h4>
+            <p>No tienes publicaciones en este momento.</p>
+            <hr>
+            <a href="{{ url_for('crear_post') }}" class="btn btn-primary btn-lg mt-3">
+                <i class="bi bi-plus-circle-fill me-2"></i>Crea tu primera publicación
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+      var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+      })
+    });
+</script>
+{% endblock %}
