@@ -1,4 +1,4 @@
-```markdown
+
 # 🌐 Opinet Blog - Plataforma de Publicaciones
 
 [![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/)
