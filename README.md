@@ -112,15 +112,4 @@ Este proyecto está bajo la licencia MIT. Ver [LICENSE](LICENSE) para más detal
 🔗 **Live Demo**:[opinet.com] (https://opinet-blog.onrender.com/register)
 ```
 
-### Características destacables que he incluido:
-1. **Badges actualizados** con las tecnologías clave
-2. **Instrucciones claras** para instalación local
-3. **Guía visual** de la estructura del proyecto
-4. **Configuración específica** para despliegue en Render
-5. **Sección de demo** con imagen (deberás subir screenshots a tu repo)
 
-¿Qué más te gustaría añadir o modificar? Podría incluir también:
-- Diagrama de la arquitectura
-- Roadmap de futuras features
-- Instrucciones para usar PostgreSQL en producción
-- Sistema de testing (si lo implementas)
