@@ -109,7 +109,7 @@ Este proyecto está bajo la licencia MIT. Ver [LICENSE](LICENSE) para más detal
 
 ✒️ **Autor**: [Diony Dev](https://github.com/Diony-dev)  
 📧 **Contacto**: [dionyjunior11@gmail.com]  
-🔗 **Live Demo**: (https://opinet-blog.onrender.com/register)
+🔗 **Live Demo**:[opinet.com] (https://opinet-blog.onrender.com/register)
 ```
 
 ### Características destacables que he incluido:
