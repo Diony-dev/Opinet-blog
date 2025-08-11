@@ -46,7 +46,7 @@
                             <label class="form-label d-block">Foto de Perfil</label>
                             <div class="d-flex align-items-center mb-3">
                                 {% if current_user.foto %}
-                                <img src="{{ url_for('static', filename='img/' + current_user.foto) }}" 
+                                <img src="{{ current_user.foto }}" 
                                      alt="Foto de perfil actual" 
                                      class="rounded-circle me-3" 
                                      style="width: 80px; height: 80px; object-fit: cover;">
