@@ -34,7 +34,7 @@
                     {# Sección de Información del Usuario #}
                     <section class="user-info mb-5 text-center">
                         {% if current_user.foto %}
-                            <img src="{{ url_for('static', filename='img/' + current_user.foto) }}" alt="Foto de perfil" class="profile-avatar img-fluid rounded-circle mb-3">
+                            <img src="{{ current_user.foto }}" alt="Foto de perfil" class="profile-avatar img-fluid rounded-circle mb-3">
                         {% else %}
                             <img src="{{ url_for('static', filename='img/login.png') }}" alt="Foto de perfil" class="profile-avatar img-fluid rounded-circle mb-3">
                         {% endif %}

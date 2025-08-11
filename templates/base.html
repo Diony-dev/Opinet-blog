@@ -165,7 +165,7 @@
                         >
                             {% if current_user.foto %}
                                 <img
-                                    src="{{ url_for('static', filename='img/' + current_user.foto) }}"
+                                    src="{{ current_user.foto }}"
                                     alt="Usuario"
                                     id="user-avatar"
                                     class="rounded-circle border border-light me-2"

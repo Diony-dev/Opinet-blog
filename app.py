@@ -16,7 +16,9 @@ from db import init_db
 from flask_ckeditor import CKEditor
 from flask_ckeditor.utils import cleanify
 from werkzeug.utils import secure_filename
-import uuid as uuid
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 
 
 app = Flask(__name__)
@@ -34,6 +36,18 @@ init_db(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+
+#configuraciones de cloudinary
+app.config['CLOUDINARY_CLOUD_NAME'] = os.getenv('CLOUDINARY_CLOUD_NAME')
+app.config['CLOUDINARY_API_KEY'] = os.getenv('CLOUDINARY_API_KEY')
+app.config['CLOUDINARY_API_SECRET'] = os.getenv('CLOUDINARY_API_SECRET')
+
+# Configurar Cloudinary con las credenciales
+cloudinary.config(
+    cloud_name=app.config['CLOUDINARY_CLOUD_NAME'],
+    api_key=app.config['CLOUDINARY_API_KEY'],
+    api_secret=app.config['CLOUDINARY_API_SECRET']
+)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -167,6 +181,8 @@ def comentar(post_id):
     
     flash('Error en el formulario de comentario.', 'danger')
     return redirect(url_for('post_detail', post_id=post_id))
+
+
 @app.route('/crear_post', methods = ['GET', 'POST'])
 @login_required
 def crear_post():
@@ -200,8 +216,8 @@ def editar_perfil():
             if form.foto.data:
                 file = form.foto.data
                 filename = secure_filename(file.filename)
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                user_data['foto'] = filename
+                cloudinary_result = cloudinary.uploader.upload(file, folder = "user_photo", public_id = f"{current_user.id}")
+                user_data['foto'] = cloudinary_result['secure_url']
 
             User.update_user(current_user.id, user_data)
             flash('Perfil actualizado exitosamente!', 'success')
