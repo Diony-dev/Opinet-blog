@@ -1,0 +1,39 @@
+<div class="container mt-4">
+    {# Comprobamos si la lista de usuarios está vacía #}
+    {% if users|length == 0 %}
+        <div class="alert alert-info text-center" role="alert">
+            No se encontraron usuarios para "{{ q }}".
+        </div>
+    {% else %}
+        <h4 class="mb-3">Resultados de la búsqueda para "{{ q }}"</h4>
+        <div class="row">
+            {# Iteramos sobre cada usuario en la lista #}
+            {% for user in users %}
+                <div class="col-12 col-md-6 col-lg-4 mb-4">
+                    <div class="card shadow-sm h-100 border-0 rounded-3">
+                        <div class="card-body d-flex align-items-center">
+                            {# Mostramos la foto de perfil del usuario. Usamos una imagen por defecto si no tiene. #}
+                            {% if user.foto %}
+                                <img
+                                    src="{{ user.foto }}"
+                                    alt="{{ user.nombre }}"
+                                    class="rounded-circle me-3"
+                                    style="width: 60px; height: 60px; object-fit: cover;"
+                                />
+                            {% else %}
+                                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-3"
+                                     style="width: 60px; height: 60px; font-size: 2.5rem; color: #1a237e;">
+                                    <i class="bi bi-person-circle"></i>
+                                </div>
+                            {% endif %}
+                            <div class="flex-grow-1">
+                                <h5 class="card-title fw-bold mb-0">{{ user.nombre }}</h5>
+                                <a href="{{ url_for('perfil_user', user_id=user.id) }}" class="text-decoration-none text-primary">Ver perfil</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>

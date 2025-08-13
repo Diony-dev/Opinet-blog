@@ -1,245 +1,285 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{%block title%}Mi Blog{%endblock%}</title>
     <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
-        crossorigin="anonymous"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      xintegrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
     />
     <link
-        rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-        href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap"
-        rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap"
+      rel="stylesheet"
     />
-    <link rel="icon" href="{{ url_for('static', filename='img/logo_transparente.ico') }}" type="image/x-icon">
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='img/logo_transparente.ico') }}"
+      type="image/x-icon"
+    />
     {% block customCss %}{%endblock%}
     <style>
-        body {
-            font-family: "Lato", sans-serif;
-            background-color: #f8f9fa;
-        }
-        .navbar-custom {
-            background-color: #1a237e !important;
-            padding: 0.5rem 1rem;
-            border-bottom-left-radius: 1.5rem;
-            border-bottom-right-radius: 1.5rem;
-        }
-        .navbar-custom .nav-link,
-        .navbar-custom .navbar-brand,
-        .navbar-custom .dropdown-toggle {
-            color: #f0f0f0 !important;
-            transition: color 0.2s, background-color 0.2s;
-        }
-        .navbar-custom .nav-link:hover,
-        .navbar-custom .dropdown-toggle:hover {
-            color: white !important;
-        }
-        .navbar-custom .nav-link.active,
-        .navbar-custom .navbar-brand.active {
-            font-weight: 700;
-            color: white !important;
-        }
-        .navbar-custom .dropdown-menu {
-            border: none;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .navbar-custom .dropdown-item {
-            color: #1a237e;
-        }
-        .navbar-custom .dropdown-item:hover {
-            background-color: #f0f0f0;
-            color: #1a237e;
-        }
-        .navbar-logo {
-            height: 40px;
-            transition: transform 0.3s ease;
-            margin-right: 10px;
-        }
-        .navbar-logo:hover {
-            transform: scale(1.05);
-        }
-        .navbar-brand-with-logo {
-            display: flex;
-            align-items: center;
-            padding: 5px 0;
-        }
-        .flash-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1050;
-            width: 90%;
-            max-width: 400px;
-        }
-        #user-avatar {
-            width: 50px;
-            height: 50px;
-            object-fit: cover;
-        }
+      body {
+        font-family: "Lato", sans-serif;
+        background-color: #f8f9fa;
+      }
+      .navbar-custom {
+        background-color: #1a237e !important;
+        padding: 0.5rem 1rem;
+        border-bottom-left-radius: 1.5rem;
+        border-bottom-right-radius: 1.5rem;
+      }
+      .navbar-custom .nav-link,
+      .navbar-custom .navbar-brand,
+      .navbar-custom .dropdown-toggle {
+        color: #f0f0f0 !important;
+        transition: color 0.2s, background-color 0.2s;
+      }
+      .navbar-custom .nav-link:hover,
+      .navbar-custom .dropdown-toggle:hover {
+        color: white !important;
+      }
+      .navbar-custom .nav-link.active,
+      .navbar-custom .navbar-brand.active {
+        font-weight: 700;
+        color: white !important;
+      }
+      .navbar-custom .dropdown-menu {
+        border: none;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      .navbar-custom .dropdown-item {
+        color: #1a237e;
+      }
+      .navbar-custom .dropdown-item:hover {
+        background-color: #f0f0f0;
+        color: #1a237e;
+      }
+      .navbar-logo {
+        height: 40px;
+        transition: transform 0.3s ease;
+        margin-right: 10px;
+      }
+      .navbar-logo:hover {
+        transform: scale(1.05);
+      }
+      .navbar-brand-with-logo {
+        display: flex;
+        align-items: center;
+        padding: 5px 0;
+      }
+      .flash-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1050;
+        width: 90%;
+        max-width: 400px;
+      }
+      #user-avatar {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     {# Sección de Mensajes Flash #}
     <div class="flash-container">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            {% endfor %}
-        {% endif %}
-        {% endwith %}
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %} {% for category, message in messages %}
+      <div
+        class="alert alert-{{ category }} alert-dismissible fade show"
+        role="alert"
+      >
+        {{ message }}
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+          aria-label="Close"
+        ></button>
+      </div>
+      {% endfor %} {% endif %} {% endwith %}
     </div>
 
     <nav class="navbar navbar-expand-lg navbar-custom shadow-lg">
-        <div class="container-fluid">
-            <a class="navbar-brand navbar-brand-with-logo" href="{{ url_for('home') }}">
-                <img
-                    src="{{ url_for('static', filename='img/logo.png') }}"
-                    alt="Logo"
-                    class="navbar-logo"
-                />
-                <span class="d-none d-md-inline">Mi Blog</span>
-            </a>
-            <button
-                class="navbar-toggler"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#navbarNav"
-                aria-controls="navbarNav"
-                aria-expanded="false"
-                aria-label="Toggle navigation"
-            >
-                <span class="navbar-toggler-icon"></span>
+      <div class="container-fluid">
+        <a
+          class="navbar-brand navbar-brand-with-logo"
+          href="{{ url_for('home') }}"
+        >
+          <img
+            src="{{ url_for('static', filename='img/opinetlogo.svg') }}"
+            alt="Logo"
+            class="navbar-logo"
+          />
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a
+                class="nav-link {% if request.endpoint == 'home' %}active{% endif %}"
+                href="{{ url_for('home') }}"
+              >
+                <i class="bi bi-house-door-fill me-1"></i>Inicio
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link {% if request.endpoint == 'about' %}active{% endif %}"
+                href="#"
+              >
+                <i class="bi bi-info-circle-fill me-1"></i>Acerca de
+              </a>
+            </li>
+            {% if current_user.is_authenticated %}
+            <li class="nav-item">
+              <a
+                class="nav-link {% if request.endpoint == 'crear_post' %}active{% endif %}"
+                href="{{ url_for('crear_post') }}"
+              >
+                <i class="bi bi-pencil-square me-1"></i>Crear Post
+              </a>
+            </li>
+            {% endif %}
+          </ul>
+          {% if current_user.is_authenticated %}
+          <form
+            class="d-flex me-3"
+            hx-get="{{url_for('search')}}"
+            hx-target="#search-results-container"
+            hx-swap="innerHTML"
+            hx-on::after-request="this.reset()"
+          >
+            <input
+              class="form-control me-2"
+              type="search"
+              name="q"
+              placeholder="Buscar..."
+              aria-label="Buscar"
+            />
+            <button class="btn btn-outline-light" type="submit"
+              hx-indicator=".htmx-indicator"
+              >
+              <i class="bi bi-search"></i>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a
-                            class="nav-link {% if request.endpoint == 'home' %}active{% endif %}"
-                            href="{{ url_for('home') }}"
-                        >
-                            <i class="bi bi-house-door-fill me-1"></i>Inicio
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a
-                            class="nav-link {% if request.endpoint == 'about' %}active{% endif %}"
-                            href="#"
-                        >
-                            <i class="bi bi-info-circle-fill me-1"></i>Acerca de
-                        </a>
-                    </li>
-                    {% if current_user.is_authenticated %}
-                    <li class="nav-item">
-                        <a
-                            class="nav-link {% if request.endpoint == 'crear_post' %}active{% endif %}"
-                            href="{{ url_for('crear_post') }}"
-                        >
-                            <i class="bi bi-pencil-square me-1"></i>Crear Post
-                        </a>
-                    </li>
-                    {% endif %}
-                </ul>
-                <ul class="navbar-nav">
-                    {% if current_user.is_authenticated %}
-                    <li class="nav-item dropdown">
-                        <a
-                            class="nav-link dropdown-toggle d-flex align-items-center"
-                            href="#"
-                            id="profileDropdown"
-                            role="button"
-                            data-bs-toggle="dropdown"
-                            aria-expanded="false"
-                        >
-                            {% if current_user.foto %}
-                                <img
-                                    src="{{ current_user.foto }}"
-                                    alt="Usuario"
-                                    id="user-avatar"
-                                    class="rounded-circle border border-light me-2"
-                                />
-                            {% else %}
-                                <i class="bi bi-person-circle fs-3 me-2"></i>
-                            {% endif %}
-                            <span class="fw-bold">{{ current_user.nombre }}</span>
-                        </a>
-                        <ul
-                            class="dropdown-menu dropdown-menu-end"
-                            aria-labelledby="profileDropdown"
-                        >
-                            <li>
-                                <a class="dropdown-item" href="{{ url_for('perfil') }}">
-                                    <i class="bi bi-person-fill me-2"></i>Perfil
-                                </a>
-                            </li>
-                            <li><hr class="dropdown-divider" /></li>
-                            <li>
-                                <a class="dropdown-item" href="{{ url_for('logout') }}">
-                                    <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    {% else %}
-                    <li class="nav-item">
-                        <a
-                            class="nav-link {% if request.endpoint == 'login' %}active{% endif %}"
-                            href="{{ url_for('login') }}"
-                        >
-                            <i class="bi bi-box-arrow-in-right me-1"></i>Iniciar Sesión
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a
-                            class="nav-link {% if request.endpoint == 'register' %}active{% endif %}"
-                            href="{{ url_for('register') }}"
-                        >
-                            <i class="bi bi-person-plus-fill me-1"></i>Registrarse
-                        </a>
-                    </li>
-                    {% endif %}
-                </ul>
-            </div>
+          </form>
+          {% endif %}
+          <ul class="navbar-nav">
+            {% if current_user.is_authenticated %}
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle d-flex align-items-center"
+                href="#"
+                id="profileDropdown"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                {% if current_user.foto %}
+                <img
+                  src="{{ current_user.foto }}"
+                  alt="Usuario"
+                  id="user-avatar"
+                  class="rounded-circle border border-light me-2"
+                />
+                {% else %}
+                <i class="bi bi-person-circle fs-3 me-2"></i>
+                {% endif %}
+                <span class="fw-bold">{{ current_user.nombre }}</span>
+              </a>
+              <ul
+                class="dropdown-menu dropdown-menu-end"
+                aria-labelledby="profileDropdown"
+              >
+                <li>
+                  <a class="dropdown-item" href="{{ url_for('perfil') }}">
+                    <i class="bi bi-person-fill me-2"></i>Perfil
+                  </a>
+                </li>
+                <li><hr class="dropdown-divider" /></li>
+                <li>
+                  <a class="dropdown-item" href="{{ url_for('logout') }}">
+                    <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
+                  </a>
+                </li>
+              </ul>
+            </li>
+            {% else %}
+            <li class="nav-item">
+              <a
+                class="nav-link {% if request.endpoint == 'login' %}active{% endif %}"
+                href="{{ url_for('login') }}"
+              >
+                <i class="bi bi-box-arrow-in-right me-1"></i>Iniciar Sesión
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link {% if request.endpoint == 'register' %}active{% endif %}"
+                href="{{ url_for('register') }}"
+              >
+                <i class="bi bi-person-plus-fill me-1"></i>Registrarse
+              </a>
+            </li>
+            {% endif %}
+          </ul>
         </div>
+      </div>
+      {# monstrar resultados de búsqueda #}
     </nav>
-    <main>{%block body%}{%endblock%}</main>
+    <main>
+      {#seccion donde se insertaran los resultados de busqueda#}
+      <div id="search-results-container" class="mb-5">
+        <!-- Los resultados se mostrarán aquí. -->
+        <!-- Puedes añadir un mensaje de bienvenida o un esqueleto de carga aquí si lo deseas. -->
+      </div>
+      {%block body%}{%endblock%}</main>
     <script
-        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-        crossorigin="anonymous"
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+      xintegrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+      crossorigin="anonymous"
     ></script>
     <script src="https://unpkg.com/htmx.org@1.9.2"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            let flashMessage = document.querySelector('.flash-container .alert');
-            if (flashMessage) {
-                setTimeout(function () {
-                    let bsAlert = new bootstrap.Alert(flashMessage);
-                    bsAlert.close();
-                }, 5000);
-            }
-        });
+      document.addEventListener("DOMContentLoaded", function () {
+        let flashMessage = document.querySelector(".flash-container .alert");
+        if (flashMessage) {
+          setTimeout(function () {
+            let bsAlert = new bootstrap.Alert(flashMessage);
+            bsAlert.close();
+          }, 5000);
+        }
+      });
     </script>
     {# Footer #}
     <footer class="bg-dark text-white text-center py-3 mt-5">
-        <div class="container">
-            <p>
-                &copy; {{ current_year if current_year else '2025' }} Mi Blog. Todos los
-                derechos reservados.
-            </p>
-        </div>
+      <div class="container">
+        <p>
+          &copy; {{ current_year if current_year else '2025' }} Mi Blog. Todos
+          los derechos reservados.
+        </p>
+      </div>
     </footer>
-</body>
+  </body>
 </html>

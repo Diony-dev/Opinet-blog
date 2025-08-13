@@ -275,6 +275,25 @@ def editar_post(post_id):
     return render_template('userview/editar_post.html', form=form, post=post)
 
 
+#ruta de vista de perfil
+@app.route("/perfil_user/<string:user_id>", methods=['GET'])
+@login_required
+def perfil_user(user_id):
+    user = User.get_user(user_id)
+    if not user:
+        flash('Usuario no encontrado.', 'danger')
+        return redirect(url_for('home'))
+    posts = Post.get_posts_by_email(user.email)
+    return render_template('userview/perfil.html', usuario=user, posts=posts)
+
+@app.route('/search', methods=['GET'])
+@login_required
+def search():
+    query = request.args.get('q')
+    print(f"Búsqueda para: {query}")
+    users = User.search_by_name(query)
+    return render_template('userview/result.html', users=users, q=query)
+
 if __name__ == '__main__':
     # Usar la configuración de producción si Render asigna un puerto,
     # de lo contrario, usar la configuración de desarrollo
