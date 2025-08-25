@@ -9,7 +9,7 @@ class Coment:
         self.id_post = coment_data['id_post']
         self.autor = coment_data['autor']
         self.fecha = coment_data['fecha']
-
+        self.parent_id = ObjectId(coment_data.get('parent_id')) if coment_data.get('parent_id') else None
 
     @staticmethod
     def create_coment(coment_data):
@@ -27,7 +27,8 @@ class Coment:
                     'contenido':coment_data['contenido'],
                     'id_post': ObjectId(coment_data['id_post']),
                     'autor': coment_data['autor'],
-                    'fecha': coment_data['fecha']
+                    'fecha': coment_data['fecha'],
+                    'parent_id':ObjectId(coment_data.get('parent_id')) if coment_data.get('parent_id') else None
                 }
             ).inserted_id
             coment_data['_id'] = result
@@ -46,9 +47,18 @@ class Coment:
         """
         db = get_db()
         coments_data = db.Comentarios.find({'id_post': ObjectId(post_id)}).sort('fecha', -1)
-        if not coments_data:
-            return []
+        comentarios = [Coment(coment) for coment in coments_data]
+       
+       #organizamos las jerarquia
+        comentarios_dict = {c.id: c for c in comentarios}
+        root_comentarios = []
+        for c in comentarios:
+            if c.parent_id:
+                parent = comentarios_dict.get(str(c.parent_id))
+                if not hasattr(parent,'replies'):
+                    parent.replies = []
+                parent.replies.append(c)
+            else:
+                root_comentarios.append(c)
 
-        return [Coment(coment) for coment in coments_data]
-    
-    
+        return root_comentarios

@@ -1,15 +1,57 @@
 {% if comments %}
-    <div class="list-group">
-        {% for comment in comments %}
-            <div class="list-group-item">
-                <h5 class="mb-1">{{ comment.autor }}</h5>
-                <p class="mb-1">{{ comment.contenido | safe }}</p>
-                <small class="text-muted">{{ comment.fecha.strftime('%d de %B de %Y a las %H:%M') }}</small>
+<div class="list-group">
+    {% for comment in comments %}
+    <div class="list-group-item">
+        <h5 class="mb-1">{{ comment.autor }}</h5>
+        <p class="mb-1">{{ comment.contenido | safe }}</p>
+        <small class="text-muted">{{ comment.fecha.strftime('%d de %B de %Y a las %H:%M') }}</small>
+
+        <button
+            class="btn btn-link"
+            hx-get="{{ url_for('get_reply_form', post_id=post.id, parent_id=comment.id) }}"
+            hx-target="#reply-form-container-{{ comment.id }}"
+            hx-swap="innerHTML"
+        >
+            Responder
+        </button>
+        {% if comment.replies %}
+        <button class="btn btn-link" onclick="toggleReplies('{{ comment.id }}')">
+            ver respuestas ({{ comment.replies | length }})
+        </button>
+        {% endif %}
+
+        <div id="reply-form-container-{{ comment.id }}"></div>
+
+        {% if comment.replies %}
+        <div class="list-group" id="replies-{{ comment.id }}" style="display: none;">
+            {% for reply in comment.replies %}
+            <div class="list-group-item ms-4 mt-2">
+                <h5 class="mb-1">{{ reply.autor }}</h5>
+                <p class="mb-1">{{ reply.contenido | safe }}</p>
+                <small class="text-muted">{{ reply.fecha.strftime('%d de %B de %Y a las %H:%M') }}</small>
             </div>
-        {% endfor %}
+            {% endfor %}
+        </div>
+        {% endif %}
     </div>
+    {% endfor %}
+</div>
 {% else %}
-    <div class="alert alert-warning" role="alert">
-        No hay comentarios para esta entrada.
-    </div>
+<div class="alert alert-warning" role="alert">
+    No hay comentarios para esta entrada.
+</div>
 {% endif %}
+<script>
+    function toggleReplies(commentId) {
+        const repliesContainer = document.getElementById(`replies-${commentId}`);
+        if (repliesContainer) {
+            if (repliesContainer.style.display === "none") {
+                repliesContainer.style.display = "block";
+            } else {
+                repliesContainer.style.display = "none";
+            }
+        } else {
+            console.warn(`No se encontró el contenedor de respuestas para el comentario con ID ${commentId}`);
+        }
+    }
+</script>

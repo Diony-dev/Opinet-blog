@@ -11,6 +11,7 @@ from flask_login import LoginManager, login_user, login_required, current_user, 
 from models.user import User
 from models.post import Post
 from models.coment import Coment
+from models.notification import Notification
 import datetime
 from db import init_db
 from flask_ckeditor import CKEditor
@@ -19,6 +20,7 @@ from werkzeug.utils import secure_filename
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
+from bson.objectid import ObjectId # Importar ObjectId para las consultas
 
 
 app = Flask(__name__)
@@ -37,7 +39,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-#configuraciones de cloudinary
+# configuraciones de cloudinary
 app.config['CLOUDINARY_CLOUD_NAME'] = os.getenv('CLOUDINARY_CLOUD_NAME')
 app.config['CLOUDINARY_API_KEY'] = os.getenv('CLOUDINARY_API_KEY')
 app.config['CLOUDINARY_API_SECRET'] = os.getenv('CLOUDINARY_API_SECRET')
@@ -125,21 +127,17 @@ def my_posts():
     posts = Post.get_collection().find({'autor': current_user.nombre}).sort('fecha', -1)
     return render_template('userview/my_post.html', user=current_user, user_posts=posts)
 
-# La ruta post_detail debe cargar la página completa, siempre
 @app.route('/post/<string:post_id>')
 def post_detail(post_id):
     post = Post.get_post(post_id) 
     form = ComentForm()
-    # Pasa los comentarios a la plantilla para la carga inicial
     comments = Coment.get_coments_by_post(post_id) 
     if post is None:
         flash('La entrada del blog no se encontró.', 'danger')
         return redirect(url_for('home'))
-    # Asegúrate de usar 'comments' para ser consistente con la plantilla comments_list.html
     return render_template('post_detail.html', post=post, comments=comments, form=form)
 
 
-# Código corregido
 @app.route('/comentar/<string:post_id>', methods=['POST'])
 @login_required
 def comentar(post_id):
@@ -157,27 +155,51 @@ def comentar(post_id):
             'contenido': form.contenido.data,
             'id_post': post_id,
             'autor': current_user.nombre,
-            'fecha': datetime.datetime.utcnow()
+            'fecha': datetime.datetime.utcnow(),
+            'parent_id': request.form.get('parent_id')
         }
         coment_added = Coment.create_coment(coment_data)
+        updated_comments = Coment.get_coments_by_post(post_id)
+        parent_id = request.form.get('parent_id')
 
-        if coment_added:
-            updated_comments = Coment.get_coments_by_post(post_id)
-            form = ComentForm()
-
-            if request.headers.get('HX-Request'):
-                return render_template('userview/coments_post.html', comments=updated_comments)
+        # Crear notificaciones (si falla, no interrumpe el flujo)
+        try:
+            parent_comment_doc = mongo.db.Comentarios.find_one({'_id': ObjectId(parent_id)})
+            if parent_id:
+                # Comentario es respuesta a otro comentario
+               
+                if parent_comment_doc:
+                    parent_author_name = parent_comment_doc['autor']
+                    parent_user_doc = mongo.db.Usuarios.find_one({'nombre': parent_author_name})
+                    if parent_user_doc and str(parent_user_doc['_id']) != str(current_user.id):
+                        Notification.create_notification({
+                            "user_id": str(parent_user_doc['_id']),
+                            "message": f"Tu comentario en la publicación '{post.titulo}' ha recibido una respuesta.",
+                            "post_id": post_id
+                        })
             else:
-                flash('Comentario agregado exitosamente!', 'success')
-                return redirect(url_for('post_detail', post_id=post_id))
+                # Comentario directo en el post
+                if post.autor != current_user.nombre:
+                    post_author_doc = mongo.db.Usuarios.find_one({'nombre': post.autor})
+                    if post_author_doc:
+                        Notification.create_notification({
+                            "user_id": str(post_author_doc['_id']),
+                            "message": f"Tu publicación '{post.titulo}' ha recibido un nuevo comentario.",
+                            "post_id": post_id
+                        })
+        except Exception as e:
+            print("Error creando notificación:", e)
+
+        # Responder según si es HTMX o no
+        if request.headers.get('HX-Request'):
+            return render_template('userview/coments_post.html', comments=updated_comments, post=post)
         else:
-            if request.headers.get('HX-Request'):
-                return "<div class='alert alert-danger'>Error al agregar comentario.</div>", 500
-            flash('Error al agregar comentario.', 'danger')
+            flash('Comentario agregado exitosamente!', 'success')
             return redirect(url_for('post_detail', post_id=post_id))
     
+    # Formulario inválido
     if request.headers.get('HX-Request'):
-        return render_template('userview/coments_post.html', comments=Coment.get_coments_by_post(post_id))
+        return render_template('userview/coments_post.html', comments=Coment.get_coments_by_post(post_id), post=post)
     
     flash('Error en el formulario de comentario.', 'danger')
     return redirect(url_for('post_detail', post_id=post_id))
@@ -275,7 +297,6 @@ def editar_post(post_id):
     return render_template('userview/editar_post.html', form=form, post=post)
 
 
-#ruta de vista de perfil
 @app.route("/perfil_user/<string:user_id>", methods=['GET'])
 @login_required
 def perfil_user(user_id):
@@ -293,6 +314,40 @@ def search():
     print(f"Búsqueda para: {query}")
     users = User.search_by_name(query)
     return render_template('userview/result.html', users=users, q=query)
+
+
+@app.route('/get_reply_form/<string:post_id>/<string:parent_id>', methods=['GET'])
+@login_required
+def get_reply_form(post_id, parent_id):
+    form = ComentForm()
+    return render_template('userview/replis.html', form=form, post_id=post_id, parent_id=parent_id)
+
+
+#endpoints de notificaciones
+@app.route('/notificaciones', methods=['GET'])
+@login_required
+def notificaciones():
+    user_id = current_user.id
+    notificaciones = Notification.get_unread_notifications(user_id)
+    print(f"Notificaciones no leídas para el usuario {user_id}: {notificaciones}")
+    return render_template('userview/notifications.html', notificaciones=notificaciones)
+
+@app.route('/marcar_leida/<string:noti_id>', methods=['POST'])
+@login_required
+def marcar_leida(noti_id):
+    if Notification.mark_as_read(noti_id):
+        flash('Notificación marcada como leída.', 'success')
+    else:
+        flash('Error al marcar la notificación como leída.', 'danger')
+    return redirect(url_for('notificaciones'))
+
+@app.route('/contar_notificaciones', methods=['GET'])
+@login_required
+def contar_notificaciones():
+    user_id = current_user.id
+    count = Notification.count_unread_notifications(user_id)
+    return str(count)
+
 
 if __name__ == '__main__':
     # Usar la configuración de producción si Render asigna un puerto,

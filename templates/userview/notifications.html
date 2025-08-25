@@ -1,0 +1,24 @@
+{% if notificaciones %}
+    <h6 class="dropdown-header">Notificaciones</h6>
+    <div class="list-group list-group-flush">
+        {% for noti in notificaciones %}
+            <a class="dropdown-item list-group-item list-group-item-action"
+               href="{{ url_for('post_detail', post_id=noti.id_post) }}">
+                <div class="d-flex w-100 justify-content-between">
+                    <small class="text-muted">{{ noti.timestamp.strftime('%d/%m/%Y %H:%M') }}</small>
+                    <form hx-post="{{ url_for('marcar_leida', noti_id=noti.id) }}"
+                          hx-target="#notificaciones-container"
+                          hx-swap="outerHTML">
+                           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-sm btn-outline-primary p-1">
+                            <i class="bi bi-check-circle"></i>
+                        </button>
+                    </form>
+                </div>
+                <p class="mb-1">{{ noti.message }}</p>
+            </a>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="text-center p-3 text-muted">No tienes notificaciones nuevas.</div>
+{% endif %}

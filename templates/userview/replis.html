@@ -1,0 +1,16 @@
+<form 
+    hx-post="{{ url_for('comentar', post_id=post_id) }}" 
+    hx-target="#comentarios" 
+    hx-swap="innerHTML" 
+    class="my-2"
+>
+    {{ form.hidden_tag() }}
+    
+    <input type="hidden" name="parent_id" value="{{ parent_id }}">
+
+    <div class="mb-3">
+        {{ form.contenido(class="form-control", rows="3") }}
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-sm">Enviar</button>
+</form>
