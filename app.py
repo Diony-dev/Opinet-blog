@@ -53,14 +53,7 @@ cloudinary.config(
     api_secret=app.config['CLOUDINARY_API_SECRET']
 )
 # Configurar la configuración regional a español para la traducción de fechas
-try:
-    locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
-except locale.Error:
-    # Alternativa para Windows
-    locale.setlocale(locale.LC_TIME, 'Spanish_Spain.1252')
 
-# Zona Horaria de RD
-zona_horaria = pytz.timezone('America/Santo_Domingo')
 
 #configuracione de Email
 app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER')
@@ -180,7 +173,7 @@ def comentar(post_id):
             'contenido': form.contenido.data,
             'id_post': post_id,
             'autor': current_user.nombre,
-            'fecha': datetime.datetime.now(zona_horaria),
+            'fecha':  datetime.datetime.utcnow(),
             'parent_id': request.form.get('parent_id')
         }
         coment_added = Coment.create_coment(coment_data)
@@ -241,7 +234,7 @@ def crear_post():
                 'titulo':form.titulo.data,
                 'contenido': contenido_clean,
                 'autor': current_user.nombre,
-                'fecha': datetime.datetime.now(zona_horaria),
+                'fecha':  datetime.datetime.utcnow(),
                 'email': current_user.email
             }
             post = Post.create_post(post_data)
