@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Nueva Contraseña
+{% endblock %}
+
+{% block customCss %}
+<style>
+    .form-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+        padding: 2rem 0;
+    }
+
+    .form-card {
+        background-color: #ffffff;
+        border-radius: 1rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 2.5rem;
+        width: 100%;
+        max-width: 450px;
+    }
+
+    .form-title {
+        font-weight: 700;
+        color: #1a237e;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .form-control {
+        border-radius: 0.5rem;
+        padding: 0.75rem 1rem;
+        border-color: #ced4da;
+    }
+
+    .form-control:focus {
+        border-color: #1a237e;
+        box-shadow: 0 0 0 0.25rem rgba(26, 35, 126, 0.25);
+    }
+
+    .btn-primary {
+        background-color: #1a237e;
+        border-color: #1a237e;
+        border-radius: 0.5rem;
+        font-weight: 700;
+        padding: 0.75rem;
+        width: 100%;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #283593;
+        border-color: #283593;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+    <div class="container form-container">
+        <div class="form-card">
+            <h2 class="form-title">Restablecer Contraseña</h2>
+            <p class="text-center text-secondary mb-4">Ingresa y confirma tu nueva contraseña.</p>
+            <form action="" method="post">
+                {{ form.hidden_tag() }}
+                <div class="mb-3">
+                    {{ form.password.label(class="form-label") }}
+                    {{ form.password(class="form-control") }}
+                    {% if form.password.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.password.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="mb-3">
+                    {{ form.confirm_password.label(class="form-label") }}
+                    {{ form.confirm_password(class="form-control") }}
+                    {% if form.confirm_password.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.confirm_password.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="d-grid gap-2">
+                    {{ form.submit(class="btn btn-primary") }}
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

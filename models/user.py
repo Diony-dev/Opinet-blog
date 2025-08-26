@@ -3,6 +3,8 @@ from flask_login import UserMixin
 from bson.objectid import ObjectId
 import re
 from db import get_db
+from flask import current_app
+from itsdangerous import URLSafeTimedSerializer 
 
 class User(UserMixin):
     # Constructor de la clase
@@ -59,6 +61,12 @@ class User(UserMixin):
         return User.get_user(user_id)
 
     @staticmethod
+    def update_pass(user_id, new_password):
+        db = get_db()
+        db.Usuarios.update_one({'_id': ObjectId(user_id)}, {'$set': {'pasw': new_password}})
+        return User.get_user(user_id)
+
+    @staticmethod
     def search_by_name(query):
         """
         Busca usuarios en la base de datos por nombre de forma insensible a mayúsculas.
@@ -79,3 +87,19 @@ class User(UserMixin):
 
         # Convierte los documentos encontrados en objetos de la clase User
         return [User(user_data) for user_data in found_users_data]
+    
+
+    
+    def generate_reset_token(self, expires_sec=3600):
+       s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+       return s.dumps({'user_id': str(self.id)}, salt='password-reset-salt')
+
+    @staticmethod
+    def verify_token(token, max_age=3600):
+       s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+       try:
+           data = s.loads(token, salt='password-reset-salt', max_age=max_age)
+           user_id = data['user_id']
+       except Exception:
+           return None
+       return User.get_user(user_id)

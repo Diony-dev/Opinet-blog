@@ -2,7 +2,7 @@
 from flask import Flask, render_template, request, url_for, redirect, flash
 from flask_wtf import CSRFProtect
 from config import config
-from forms import RegisterForm, LoginForm, EntradaForm, EditarPerfilForm, ComentForm, EditPostForm
+from forms import RegisterForm, LoginForm, EntradaForm, EditarPerfilForm, ComentForm, EditPostForm, RequestResetForm, ResetPasswordForm
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 import os 
@@ -21,7 +21,9 @@ import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 from bson.objectid import ObjectId # Importar ObjectId para las consultas
-
+import pytz
+import locale
+from flask_mail import Message, Mail
 
 app = Flask(__name__)
 load_dotenv()
@@ -50,6 +52,29 @@ cloudinary.config(
     api_key=app.config['CLOUDINARY_API_KEY'],
     api_secret=app.config['CLOUDINARY_API_SECRET']
 )
+# Configurar la configuración regional a español para la traducción de fechas
+try:
+    locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
+except locale.Error:
+    # Alternativa para Windows
+    locale.setlocale(locale.LC_TIME, 'Spanish_Spain.1252')
+
+# Zona Horaria de RD
+zona_horaria = pytz.timezone('America/Santo_Domingo')
+
+#configuracione de Email
+app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER')
+app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT', 587))
+app.config['MAIL_USE_TLS'] = os.getenv('MAIL_USE_TLS', 'true').lower() in ['true', '1', 't']
+app.config['MAIL_USERNAME'] = 'apikey'
+app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_SENDER')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+mail = Mail(app)
+
+
+
+
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -105,7 +130,7 @@ def register():
 @app.route('/home', methods=['GET'])
 @login_required
 def home():
-    posts = Post.get_all_posts()
+    posts = Post.get_all_posts(limit=6)
     return render_template('home.html', posts=posts, user=current_user)
 
 @app.route('/logout', methods=['GET'])
@@ -155,7 +180,7 @@ def comentar(post_id):
             'contenido': form.contenido.data,
             'id_post': post_id,
             'autor': current_user.nombre,
-            'fecha': datetime.datetime.utcnow(),
+            'fecha': datetime.datetime.now(zona_horaria),
             'parent_id': request.form.get('parent_id')
         }
         coment_added = Coment.create_coment(coment_data)
@@ -216,7 +241,7 @@ def crear_post():
                 'titulo':form.titulo.data,
                 'contenido': contenido_clean,
                 'autor': current_user.nombre,
-                'fecha': datetime.datetime.utcnow(),
+                'fecha': datetime.datetime.now(zona_horaria),
                 'email': current_user.email
             }
             post = Post.create_post(post_data)
@@ -347,6 +372,56 @@ def contar_notificaciones():
     user_id = current_user.id
     count = Notification.count_unread_notifications(user_id)
     return str(count)
+
+#restablecimeinto de pasw
+def send_password_reset_email(user, token):
+    link = url_for('reset_token', token=token, _external=True)
+    msg = Message(
+        'Restablecimiento de Contraseña',
+        sender='opinetsoporte@gmail.com',
+        recipients=[user.email]
+    )
+    msg.html = f"""
+<html>
+  <body>
+    <p>Hola <strong>{user.nombre}</strong>,</p>
+    <p>Para restablecer tu contraseña, haz click en el siguiente enlace:</p>
+    <p><a href="{link}">Restablecer contraseña</a></p>
+    <hr>
+    <p>Si no solicitaste esto, simplemente ignora este correo.</p>
+  </body>
+</html>
+"""
+    mail.send(msg)
+
+
+@app.route('/reset_password_request', methods=['GET', 'POST'])
+def reset_password_request():
+    form = RequestResetForm()
+    if form.validate_on_submit():
+        user = User.get_user_by_email(form.email.data)
+        token = user.generate_reset_token()
+        send_password_reset_email(user, token)
+        flash('Se ha enviado un correo para restablecer tu contraseña.', 'info')
+        return redirect(url_for('login'))
+    return render_template('auth/forgot.html', form=form)
+
+@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_token(token):
+    user = User.verify_token(token)
+    if user is None:
+        flash('El token es inválido o ha expirado.', 'warning')
+        return redirect(url_for('reset_password_request'))
+
+    form  = ResetPasswordForm()
+    if form.validate_on_submit():
+        hashed_password = generate_password_hash(form.password.data)
+        User.update_pass(user.id, hashed_password)
+        flash('Tu contraseña ha sido actualizada! Ya puedes iniciar sesión.', 'success')
+        return redirect(url_for('login'))
+    return render_template('auth/reset.html', form=form)
+
+
 
 
 if __name__ == '__main__':
